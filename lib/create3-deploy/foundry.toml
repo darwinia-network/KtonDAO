@@ -1,0 +1,34 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+sender = "0x0f14341A7f464320319025540E8Fe48Ad0fe5aec"
+solc_version = "0.8.17"
+evm_version = "london"
+optimizer = true
+optimizer_runs = 999999
+bytecode_hash = "none"
+auto_detect_remappings = false
+
+[rpc_endpoints]
+arbitrum-goerli = "https://goerli-rollup.arbitrum.io/rpc"
+arbitrum-sepolia = "https://sepolia-rollup.arbitrum.io/rpc"
+goerli = "https://rpc.ankr.com/eth_goerli"
+sepolia = "https://rpc.ankr.com/eth_sepolia"
+pangolin = "https://pangolin-rpc.darwinia.network"
+crab = "https://crab-rpc.darwinia.network"
+darwinia = "https://rpc.darwinia.network"
+arbitrum = "https://arb1.arbitrum.io/rpc"
+polygon = "https://polygon-rpc.com"
+ethereum = "https://mainnet.infura.io/v3/${INFURA_KEY}"
+mantle = "https://rpc.mantle.xyz"
+
+[etherscan]
+ethereum = { key = "${ETHERSCAN_API_KEY}" }
+polygon = { key = "${ETHERSCAN_POLYGON_KEY}" }
+arbitrum = { key = "${ETHERSCAN_ARBITRUM_KEY}" }
+arbitrum-goerli = { key = "${ETHERSCAN_ARBITRUM_KEY}" }
+arbitrum-sepolia = { key = "${ETHERSCAN_ARBITRUM_KEY}" }
+darwinia = { key = "${ETHERSCAN_DARWINIA_KEY}", url = "https://darwinia.api.subscan.io/api/scan/evm/contract/verifysource" }
+pangolin = { key = "${ETHERSCAN_DARWINIA_KEY}", url = "https://pangolin.api.subscan.io/api/scan/evm/contract/verifysource" }
+crab = { key = "${ETHERSCAN_DARWINIA_KEY}", url = "https://crab.api.subscan.io/api/scan/evm/contract/verifysource" }

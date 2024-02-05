@@ -1,0 +1,16 @@
+[workspace]
+members = ["cli"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.72"
+license = "MIT"
+description = "Generate salt for create3"
+repository = "https://github.com/darwinia-network/create3-deploy"
+readme = "README.md"
+include = [
+    "cli/**/*.rs",
+    "Cargo.toml",
+]

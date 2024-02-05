@@ -1,0 +1,3 @@
+[submodule "lib/create3-deploy"]
+	path = lib/create3-deploy
+	url = https://github.com/darwinia-network/create3-deploy
