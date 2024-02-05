@@ -1,39 +1,31 @@
-# <h1 align="center"> Forge Template </h1>
+## Staker
 
-**Template repository for getting started quickly with Foundry projects**
+Forked from 
+[https://github.com/Uniswap/liquidity-staker](https://github.com/Uniswap/liquidity-staker)
 
-![Github Actions](https://github.com/hujw77/forge-template/workflows/CI/badge.svg)
+Staking pool for KTON. 
 
-## Getting Started
+### API
 
-Click "Use this template" on [GitHub](https://github.com/hujw77/forge-template) to create a new repository with this repo as the initial state.
+#### `totalSupply()` 
+Return the total KTON token amount in the staking pool
 
-Or, if your repo already exists, run:
-```sh
-forge init
-forge build
-forge test
-```
+#### `balanceOf(address account)`
+Return the KTON token balance of `account`
 
-## Writing your first test
+#### `earned(address account)`
+Return the earned RING amount of `account`
 
-All you need is to `import forge-std/Test.sol` and then inherit it from your test contract. Forge-std's Test contract comes with a pre-instatiated [cheatcodes environment](https://book.getfoundry.sh/cheatcodes/), the `vm`. It also has support for [ds-test](https://book.getfoundry.sh/reference/ds-test.html)-style logs and assertions. Finally, it supports Hardhat's [console.log](https://github.com/brockelmore/forge-std/blob/master/src/console.sol). The logging functionalities require `-vvvv`.
+#### `stake(uint256 amount)`
+Stake `amount` KTON token for receiving RING reward
 
-```solidity
-pragma solidity 0.8.10;
+#### `withdraw(uint256 amount)`
+Withdraw `amount` KTON token
 
-import "forge-std/Test.sol";
+#### `getReward()`
+Claim earned RING
 
-contract ContractTest is Test {
-    function testExample() public {
-        vm.roll(100);
-        console.log(1);
-        emit log("hi");
-        assertTrue(true);
-    }
-}
-```
+#### `exit()`
+Withdraw all staked KTON token and Claim earned RING to exit
 
-## Development
-
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for instructions on how to install and use Foundry.
+### [Mathematical Proof](./doc/staker.pdf)
