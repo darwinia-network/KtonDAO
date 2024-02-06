@@ -5,6 +5,11 @@ Forked from
 
 Staking pool for KTON. 
 
+## Addresses
+|  NetWork  |       KTON Staker Deployment Address       |
+|-----------|--------------------------------------------|
+|  Pangolin | 0x0000003f5bA7A4EA41655aDbC89c2A668d449128 |
+
 ### API
 
 #### `totalSupply()` 
