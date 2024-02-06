@@ -31,10 +31,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(
-        address _rewardsDistribution,
-        address _stakingToken
-    ) public {
+    constructor(address _rewardsDistribution, address _stakingToken) public {
         stakingToken = IERC20(_stakingToken);
         rewardsDistribution = _rewardsDistribution;
     }
@@ -57,14 +54,15 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         if (_totalSupply == 0) {
             return rewardPerTokenStored;
         }
-        return
-            rewardPerTokenStored.add(
-                lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
-            );
+        return rewardPerTokenStored.add(
+            lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
+        );
     }
 
     function earned(address account) public view returns (uint256) {
-        return _balances[account].mul(rewardPerToken().sub(userRewardPerTokenPaid[account])).div(1e18).add(rewards[account]);
+        return _balances[account].mul(rewardPerToken().sub(userRewardPerTokenPaid[account])).div(1e18).add(
+            rewards[account]
+        );
     }
 
     function getRewardForDuration() external view returns (uint256) {
@@ -93,7 +91,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         uint256 reward = rewards[msg.sender];
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            (bool success, ) = msg.sender.call.value(reward)("");
+            (bool success,) = msg.sender.call.value(reward)("");
             require(success, "Transfer failed");
             emit RewardPaid(msg.sender, reward);
         }
@@ -119,7 +117,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         // This keeps the reward rate in the right range, preventing overflows due to
         // very high values of rewardRate in the earned and rewardsPerToken functions;
         // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-        uint balance = address(this).balance;
+        uint256 balance = address(this).balance;
         require(rewardRate <= balance.div(rewardsDuration), "Provided reward too high");
 
         lastUpdateTime = block.timestamp;
@@ -146,4 +144,3 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
     event Withdrawn(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 reward);
 }
-
