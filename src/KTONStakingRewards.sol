@@ -16,7 +16,6 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
 
     /* ========== STATE VARIABLES ========== */
 
-    IERC20 public rewardsToken;
     IERC20 public stakingToken;
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
@@ -34,10 +33,8 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
 
     constructor(
         address _rewardsDistribution,
-        address _rewardsToken,
         address _stakingToken
     ) public {
-        rewardsToken = IERC20(_rewardsToken);
         stakingToken = IERC20(_stakingToken);
         rewardsDistribution = _rewardsDistribution;
     }
@@ -96,7 +93,8 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         uint256 reward = rewards[msg.sender];
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            rewardsToken.safeTransfer(msg.sender, reward);
+			(bool success, ) = msg.sender.call.value(reward)("");
+			require(success, "Transfer failed");
             emit RewardPaid(msg.sender, reward);
         }
     }
@@ -121,7 +119,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         // This keeps the reward rate in the right range, preventing overflows due to
         // very high values of rewardRate in the earned and rewardsPerToken functions;
         // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-        uint balance = rewardsToken.balanceOf(address(this));
+        uint balance = address(this).balance;
         require(rewardRate <= balance.div(rewardsDuration), "Provided reward too high");
 
         lastUpdateTime = block.timestamp;
