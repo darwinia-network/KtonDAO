@@ -428,7 +428,7 @@ contract ReentrancyGuard {
 contract RewardsDistributionRecipient {
     address public rewardsDistribution;
 
-    function notifyRewardAmount(uint256 reward) external;
+    function notifyRewardAmount() external payable;
 
     modifier onlyRewardsDistribution() {
         require(msg.sender == rewardsDistribution, "Caller is not RewardsDistribution contract");
@@ -498,10 +498,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(
-        address _rewardsDistribution,
-        address _stakingToken
-    ) public {
+    constructor(address _rewardsDistribution, address _stakingToken) public {
         stakingToken = IERC20(_stakingToken);
         rewardsDistribution = _rewardsDistribution;
     }
@@ -573,7 +570,9 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
+    function notifyRewardAmount() external payable onlyRewardsDistribution updateReward(address(0)) {
+        uint256 reward = msg.value;
+        require(reward >= rewardsDuration, "Provided reward too low");
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {
