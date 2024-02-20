@@ -16,7 +16,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== STATE VARIABLES ========== */
 
-    IERC20 public stakingToken;
+    IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public rewardsDuration = 7200;
@@ -28,13 +28,6 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
-
-    /* ========== CONSTRUCTOR ========== */
-
-    constructor(address _rewardsDistribution, address _stakingToken) public {
-        stakingToken = IERC20(_stakingToken);
-        rewardsDistribution = _rewardsDistribution;
-    }
 
     /* ========== VIEWS ========== */
 
