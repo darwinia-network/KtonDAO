@@ -1,4 +1,9 @@
-pragma solidity ^0.5.16;
+// hevm: flattened sources of src/RewardsDistributionRecipient.sol
+
+pragma solidity >=0.5.16 <0.6.0;
+
+////// src/RewardsDistributionRecipient.sol
+/* pragma solidity ^0.5.16; */
 
 contract RewardsDistributionRecipient {
     // "sc/ktnstk" in bytes.
@@ -11,3 +16,4 @@ contract RewardsDistributionRecipient {
         _;
     }
 }
+

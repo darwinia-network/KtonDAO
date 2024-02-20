@@ -96,9 +96,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    function notifyRewardAmount() external payable onlyRewardsDistribution updateReward(address(0)) {
-        uint256 reward = msg.value;
-        require(reward >= rewardsDuration, "Provided reward too low");
+    function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {
