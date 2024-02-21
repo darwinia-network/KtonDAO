@@ -6,9 +6,9 @@ Forked from
 Staking pool for KTON. 
 
 ## Addresses
-|  NetWork  |       KTON Staker Deployment Address       |
-|-----------|--------------------------------------------|
-|  Pangolin | 0x0000000000F9180bB475E0673d7710beC1bc2Cc0 |
+|  NetWork  |       KTONStakingRewards                   | | 
+|-----------|--------------------------------------------|-|
+|  Pangolin | 0x0000000000F9180bB475E0673d7710beC1bc2Cc0 ||
 
 ### API
 
