@@ -483,10 +483,10 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== STATE VARIABLES ========== */
 
-    IERC20 public stakingToken;
+    IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
-    uint256 public rewardsDuration = 7200;
+    uint256 public rewardsDuration = 7 days;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -498,8 +498,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _rewardsDistribution, address _stakingToken) public {
-        stakingToken = IERC20(_stakingToken);
+    constructor(address _rewardsDistribution) public {
         rewardsDistribution = _rewardsDistribution;
     }
 
@@ -572,7 +571,6 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     function notifyRewardAmount() external payable onlyRewardsDistribution updateReward(address(0)) {
         uint256 reward = msg.value;
-        require(reward >= rewardsDuration, "Provided reward too low");
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {

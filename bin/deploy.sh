@@ -3,25 +3,41 @@
 set -eo pipefail
 
 chain=${1:?}
-addr=0x0000000000F9180bB475E0673d7710beC1bc2Cc0
-salt=0xfa22cbd0171eac53025c57496561ca39c3e6a4e8affe2848552ec79f85513fae
 c3=0x0000000000C76fe1798a428F60b27c6724e03408
 deployer=0x0f14341A7f464320319025540E8Fe48Ad0fe5aec
 
-KTON=0x0000000000000000000000000000000000000402
-STAKING_PALLET=0x6d6f646c64612f74727372790000000000000000
+deploy() {
+  local addr=${1:?}
+  local salt=${2:?}
+  local bytecode=${3:?}
+  expect_addr=$(seth call $c3 "deploy(bytes32,bytes)(address)" $salt $bytecode --chain $chain)
 
-bytecode=$(jq -r ".contracts[\"src/KTONStakingRewards.sol\"].KTONStakingRewards.evm.bytecode.object" out/dapp.sol.json)
-args=$(set -x; ethabi encode params \
-  -v address "${STAKING_PALLET:2}" \
-  -v address "${KTON:2}"
+  if [[ $(seth --to-checksum-address "${addr}") == $(seth --to-checksum-address "${expect_addr}") ]]; then
+    (set -x; seth send $c3 "deploy(bytes32,bytes)" $salt $bytecode --chain $chain)
+  else
+    echo "Unexpected address."
+  fi
+}
+
+distribution_addr=0x00000012683ac5ff103025368AF1F81Fc115EfF0
+distribution_salt=0xcad6cb652297b9cce31cc6c6ab19511394175643c4551d0974b9fe5cde811818
+# "sc/ktnstk" in bytes.
+distribution_owner=0x73632F6b746e73746B0000000000000000000000;
+
+distribution_bytecode=$(jq -r ".contracts[\"src/RewardsDistribution.sol\"].RewardsDistribution.evm.bytecode.object" out/dapp.sol.json)
+distribution_args=$(set -x; ethabi encode params \
+  -v address "${distribution_owner:2}"
 )
-creationCode=0x$bytecode$args
-# salt, creationCode
-expect_addr=$(seth call $c3 "deploy(bytes32,bytes)(address)" $salt $creationCode --chain $chain)
+distribution_creationCode=0x$distribution_bytecode$distribution_args
 
-if [[ $(seth --to-checksum-address "${addr}") == $(seth --to-checksum-address "${expect_addr}") ]]; then
-  (set -x; seth send $c3 "deploy(bytes32,bytes)" $salt $creationCode --chain $chain)
-else
-  echo "Unexpected address."
-fi
+deploy $distribution_addr $distribution_salt $distribution_creationCode 
+
+staker_addr=0x0000009174453855101ad2D7981E2fC4222B5ad2
+staker_salt=0xa2a87b8f359c9a1951d7639f04b027a94fe687f785b285ad32a91d30ac396666
+staker_bytecode=$(jq -r ".contracts[\"src/KTONStakingRewards.sol\"].KTONStakingRewards.evm.bytecode.object" out/dapp.sol.json)
+staker_args=$(set -x; ethabi encode params \
+  -v address "${distribution_addr:2}"
+)
+staker_creationCode=0x$staker_bytecode$staker_args
+
+deploy $staker_addr $staker_salt $staker_creationCode
