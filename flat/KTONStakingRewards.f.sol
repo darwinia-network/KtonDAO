@@ -426,10 +426,9 @@ contract ReentrancyGuard {
 /* pragma solidity ^0.5.16; */
 
 contract RewardsDistributionRecipient {
-    // "sc/ktnstk" in bytes.
-    address public constant rewardsDistribution = 0x73632F6b746e73746B0000000000000000000000;
+    address public rewardsDistribution;
 
-    function notifyRewardAmount() external;
+    function notifyRewardAmount() external payable;
 
     modifier onlyRewardsDistribution() {
         require(msg.sender == rewardsDistribution, "Caller is not RewardsDistribution contract");
@@ -487,7 +486,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
     IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
-    uint256 public rewardsDuration = 7200;
+    uint256 public rewardsDuration = 7 days;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -496,6 +495,12 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
+
+    /* ========== CONSTRUCTOR ========== */
+
+    constructor(address _rewardsDistribution) public {
+        rewardsDistribution = _rewardsDistribution;
+    }
 
     /* ========== VIEWS ========== */
 
@@ -564,7 +569,8 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
+    function notifyRewardAmount() external payable onlyRewardsDistribution updateReward(address(0)) {
+        uint256 reward = msg.value;
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {

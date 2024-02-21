@@ -1,8 +1,6 @@
 pragma solidity ^0.5.16;
 
 contract RewardsDistributionRecipient {
-    // "sc/ktnstk" in bytes.
-    // address public constant rewardsDistribution = 0x73632F6b746e73746B0000000000000000000000;
     address public rewardsDistribution;
 
     function notifyRewardAmount() external payable;
