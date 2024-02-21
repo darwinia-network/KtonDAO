@@ -2,8 +2,6 @@
 
 set -eo pipefail
 
-set -x
-
 chain=${1:?}
 c3=0x0000000000C76fe1798a428F60b27c6724e03408
 deployer=0x0f14341A7f464320319025540E8Fe48Ad0fe5aec
