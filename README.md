@@ -6,9 +6,11 @@ Forked from
 Staking pool for KTON. 
 
 ## Addresses
-|  NetWork  |       KTONStakingRewards                   |           RewardsDistribution              | 
-|-----------|--------------------------------------------|--------------------------------------------|
-|  Pangolin | 0x0000008DF497D85E3C16d6A56dAA070277e102c0 | 0x0000000B7525fcC81AF34f25eFc4e87A0beaCDEd |
+|  Contract            | Canonical Cross-chain Deployment Address   |
+|----------------------|--------------------------------------------|
+|  KTONStakingRewards  | 0x000000000419683a1a03AbC21FC9da25fd2B4dD7 |
+|  RewardsDistribution | 0x000000000Ae5DB7BDAf8D071e680452e33d91Dd5 |
+|  sc/ktstk            | 0x73632F6B7473746B000000000000000000000000 |
 
 ### API
 
