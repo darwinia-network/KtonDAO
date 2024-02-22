@@ -62,10 +62,10 @@ contract RewardsDistribution is Owned {
             address(this).balance >= reward, "RewardsDistribution contract does not have enough tokens to distribute"
         );
         IRewardsDistributionRecipient(ktonStakingRewards).notifyRewardAmount.value(reward)();
-        emit RewardsDistributed(reward);
+        emit RewardsDistributed(ktonStakingRewards, reward);
         return true;
     }
 
-    event RewardsDistributed(uint256 amount);
+    event RewardsDistributed(address stakingRewards, uint256 amount);
 }
 
