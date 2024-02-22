@@ -8,7 +8,7 @@ Staking pool for KTON.
 ## Addresses
 |  NetWork  |       KTONStakingRewards                   |           RewardsDistribution              | 
 |-----------|--------------------------------------------|--------------------------------------------|
-|  Pangolin | 0x0000009174453855101ad2D7981E2fC4222B5ad2 | 0x00000012683ac5ff103025368AF1F81Fc115EfF0 |
+|  Pangolin | 0x0000008DF497D85E3C16d6A56dAA070277e102c0 | 0x0000000B7525fcC81AF34f25eFc4e87A0beaCDEd |
 
 ### API
 

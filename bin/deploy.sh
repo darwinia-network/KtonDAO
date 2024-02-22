@@ -19,10 +19,10 @@ deploy() {
   fi
 }
 
-distribution_addr=0x00000012683ac5ff103025368AF1F81Fc115EfF0
-distribution_salt=0xcad6cb652297b9cce31cc6c6ab19511394175643c4551d0974b9fe5cde811818
-# "sc/ktnstk" in bytes.
-distribution_owner=0x73632F6b746e73746B0000000000000000000000;
+distribution_addr=0x0000000B7525fcC81AF34f25eFc4e87A0beaCDEd
+distribution_salt=0xa84a08f1f27355050292c161c24270ec58f78e9f4c5f22c42bc615eea15dbde0
+# "sc/ktstk" in bytes.
+distribution_owner=0x73632F6B7473746B000000000000000000000000;
 
 distribution_bytecode=$(jq -r ".contracts[\"src/RewardsDistribution.sol\"].RewardsDistribution.evm.bytecode.object" out/dapp.sol.json)
 distribution_args=$(set -x; ethabi encode params \
@@ -32,8 +32,8 @@ distribution_creationCode=0x$distribution_bytecode$distribution_args
 
 deploy $distribution_addr $distribution_salt $distribution_creationCode 
 
-staker_addr=0x0000009174453855101ad2D7981E2fC4222B5ad2
-staker_salt=0xa2a87b8f359c9a1951d7639f04b027a94fe687f785b285ad32a91d30ac396666
+staker_addr=0x0000008DF497D85E3C16d6A56dAA070277e102c0
+staker_salt=0x6d9f3dc3c5752f7dc1add87465c17dfb03fd0c0e058a2b914eec5d3b9cb3e136
 staker_bytecode=$(jq -r ".contracts[\"src/KTONStakingRewards.sol\"].KTONStakingRewards.evm.bytecode.object" out/dapp.sol.json)
 staker_args=$(set -x; ethabi encode params \
   -v address "${distribution_addr:2}"
