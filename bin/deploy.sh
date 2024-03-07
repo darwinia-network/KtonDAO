@@ -21,8 +21,8 @@ deploy() {
 
 distribution_addr=0x000000000Ae5DB7BDAf8D071e680452e33d91Dd5
 distribution_salt=0x56641813759e8bb0f38c11807e246deaa9220254aafb00ae22942afcc7679c4d
-# "sc/ktstk" in bytes.
-distribution_owner=0x73632F6B7473746B000000000000000000000000;
+# "modlda/trsry" in bytes.
+distribution_owner=0x6d6f646c64612f74727372790000000000000000
 
 distribution_bytecode=$(jq -r ".contracts[\"src/RewardsDistribution.sol\"].RewardsDistribution.evm.bytecode.object" out/dapp.sol.json)
 distribution_args=$(set -x; ethabi encode params \
