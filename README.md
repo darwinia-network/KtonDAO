@@ -10,7 +10,7 @@ Staking pool for KTON.
 |----------------------|--------------------------------------------|
 |  KTONStakingRewards  | 0x000000000419683a1a03AbC21FC9da25fd2B4dD7 |
 |  RewardsDistribution | 0x000000000Ae5DB7BDAf8D071e680452e33d91Dd5 |
-|  sc/ktstk            | 0x73632F6B7473746B000000000000000000000000 |
+|  modlda/trsry        | 0x6d6f646c64612f74727372790000000000000000 |
 
 ### API
 
