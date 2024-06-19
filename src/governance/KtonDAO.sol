@@ -1,36 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorSettingsUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
+import "@openzeppelin/contracts/governance/Governor.sol";
+import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
+import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
+import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
+import "@flexible-voting/GovernorCountingFractional.sol";
 
-contract KtonDAO is
-    Initializable,
-    GovernorUpgradeable,
-    GovernorSettingsUpgradeable,
-    GovernorCountingSimpleUpgradeable,
-    GovernorVotesUpgradeable,
-    GovernorTimelockControlUpgradeable
-{
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(IVotes _token, TimelockControllerUpgradeable _timelock, string memory name)
-        public
-        initializer
-    {
-        __Governor_init(name);
-        __GovernorSettings_init(1 days, 2 weeks, 200 * 1e18);
-        __GovernorCountingSimple_init();
-        __GovernorVotes_init(_token);
-        __GovernorTimelockControl_init(_timelock);
-    }
+contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockControl, GovernorSettings {
+    constructor(
+        uint256 initialVotingDelay,
+        uint256 initialVotingPeriod,
+        uint256 initialProposalThreshold,
+        ERC20Votes token,
+        TimelockController timelock,
+        string memory name
+    )
+        GovernorVotes(token)
+        GovernorSettings(initialVotingDelay, initialVotingPeriod, initialProposalThreshold)
+        GovernorTimelockControl(timelock)
+        Governor(name)
+    {}
 
     // The following functions are overrides required by Solidity.
 
