@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
 
-contract GovernanceRing is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper {
+contract GovernanceKton is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper {
     IERC20 public constant KTON = IKTON(0x0000000000000000000000000000000000000402);
 
     constructor() ERC20("Governance KTON", "gKTON") ERC20Permit("Governance KTON") ERC20Wrapper(KTON) {}
