@@ -1,1 +1,2 @@
 @openzeppelin/=lib/openzeppelin-contracts/
+@flexible-voting/=lib/flexible-voting/src/
