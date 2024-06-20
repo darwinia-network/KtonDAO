@@ -7,8 +7,8 @@ import "@flexible-voting/FlexVotingClient.sol";
 import "./StakingRewards.sol";
 
 contract StakingFlexVoting is StakingRewards, FlexVotingClient {
-  using SafeCast for uint256;
-  using Checkpoints for Checkpoints.Trace224;
+    using SafeCast for uint256;
+    using Checkpoints for Checkpoints.Trace224;
 
     constructor(address _rewardsDistribution, address _token, address _governor)
         StakingRewards(_rewardsDistribution, _token)
@@ -21,12 +21,14 @@ contract StakingFlexVoting is StakingRewards, FlexVotingClient {
         return SafeCast.toUint224(balanceOf(_user));
     }
 
-    function _castVoteReasonString() internal override pure returns (string memory) {
+    function _castVoteReasonString() internal pure override returns (string memory) {
         return "rolled-up vote from StakingFlexVoting token holders";
     }
 
     function _updateVotes(address account) internal virtual override {
         FlexVotingClient._checkpointRawBalanceOf(account);
-        FlexVotingClient.totalBalanceCheckpoints.push(SafeCast.toUint32(block.timestamp), SafeCast.toUint224(totalSupply()));
+        FlexVotingClient.totalBalanceCheckpoints.push(
+            SafeCast.toUint32(block.number), SafeCast.toUint224(totalSupply())
+        );
     }
 }
