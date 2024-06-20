@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
 
 contract GovernanceKton is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper {
-    IERC20 public constant KTON = IKTON(0x0000000000000000000000000000000000000402);
+    IERC20 public constant KTON = IERC20(0x0000000000000000000000000000000000000402);
 
     constructor() ERC20("Governance KTON", "gKTON") ERC20Permit("Governance KTON") ERC20Wrapper(KTON) {}
 
@@ -27,7 +27,7 @@ contract GovernanceKton is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper {
         super._update(from, to, value);
     }
 
-    function nonces(address owner) public view override(ERC20PermitUpgradeable, NoncesUpgradeable) returns (uint256) {
+    function nonces(address owner) public view override(ERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
 }

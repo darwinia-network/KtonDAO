@@ -1,27 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {Checkpoints} from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import "@flexible-voting/FlexVotingClient.sol";
-import "./KTONStakingRewards.sol";
+import "./StakingRewards.sol";
 
-contract StakingFlexVoting is KTONStakingRewards, FlexVotingClient {
-    constructor(address _rewardsDistribution, address _governor)
-        KTONStakingRewards(_token)
+contract StakingFlexVoting is StakingRewards, FlexVotingClient {
+  using SafeCast for uint256;
+  using Checkpoints for Checkpoints.Trace224;
+
+    constructor(address _rewardsDistribution, address _token, address _governor)
+        StakingRewards(_rewardsDistribution, _token)
         FlexVotingClient(_governor)
     {
         _selfDelegate();
     }
 
-    function _rawBalanceOf(address _user) internal view virtual override returns (uint256) {
-        return _balances[_user];
+    function _rawBalanceOf(address _user) internal view virtual override returns (uint224) {
+        return SafeCast.toUint224(balanceOf(_user));
     }
 
-    function _castVoteReasonString() internal override returns (string memory) {
+    function _castVoteReasonString() internal override pure returns (string memory) {
         return "rolled-up vote from StakingFlexVoting token holders";
     }
 
     function _updateVotes(address account) internal virtual override {
         FlexVotingClient._checkpointRawBalanceOf(account);
-        FlexVotingClient.totalBalanceCheckpoints.push(_totalSupply);
+        FlexVotingClient.totalBalanceCheckpoints.push(SafeCast.toUint32(block.timestamp), SafeCast.toUint224(totalSupply()));
     }
 }

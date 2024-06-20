@@ -9,10 +9,10 @@ import "@flexible-voting/GovernorCountingFractional.sol";
 
 contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockControl, GovernorSettings {
     constructor(
-        uint256 initialVotingDelay,
-        uint256 initialVotingPeriod,
+        uint48 initialVotingDelay,
+        uint32 initialVotingPeriod,
         uint256 initialProposalThreshold,
-        ERC20Votes token,
+        IVotes token,
         TimelockController timelock,
         string memory name
     )
@@ -28,18 +28,18 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
         return 5_000 * 1e18;
     }
 
-    function votingDelay() public view override(GovernorUpgradeable, GovernorSettingsUpgradeable) returns (uint256) {
+    function votingDelay() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.votingDelay();
     }
 
-    function votingPeriod() public view override(GovernorUpgradeable, GovernorSettingsUpgradeable) returns (uint256) {
+    function votingPeriod() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.votingPeriod();
     }
 
     function state(uint256 proposalId)
         public
         view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        override(Governor, GovernorTimelockControl)
         returns (ProposalState)
     {
         return super.state(proposalId);
@@ -48,7 +48,7 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
     function proposalNeedsQueuing(uint256 proposalId)
         public
         view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        override(Governor, GovernorTimelockControl)
         returns (bool)
     {
         return super.proposalNeedsQueuing(proposalId);
@@ -57,7 +57,7 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
     function proposalThreshold()
         public
         view
-        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
+        override(Governor, GovernorSettings)
         returns (uint256)
     {
         return super.proposalThreshold();
@@ -69,7 +69,7 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint48) {
+    ) internal override(Governor, GovernorTimelockControl) returns (uint48) {
         return super._queueOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
@@ -79,7 +79,7 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) {
+    ) internal override(Governor, GovernorTimelockControl) {
         super._executeOperations(proposalId, targets, values, calldatas, descriptionHash);
     }
 
@@ -88,14 +88,14 @@ contract KtonDAO is GovernorCountingFractional, GovernorVotes, GovernorTimelockC
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint256) {
+    ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
     }
 
     function _executor()
         internal
         view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        override(Governor, GovernorTimelockControl)
         returns (address)
     {
         return super._executor();
