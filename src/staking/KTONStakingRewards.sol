@@ -1,22 +1,23 @@
-pragma solidity ^0.5.16;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 
-import "openzeppelin-solidity-2.3.0/contracts/math/Math.sol";
-import "openzeppelin-solidity-2.3.0/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity-2.3.0/contracts/token/ERC20/ERC20Detailed.sol";
-import "openzeppelin-solidity-2.3.0/contracts/token/ERC20/SafeERC20.sol";
-import "openzeppelin-solidity-2.3.0/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Inheritance
 import "./interfaces/IStakingRewards.sol";
 import "./RewardsDistributionRecipient.sol";
 
-contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard {
+abstract contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     /* ========== STATE VARIABLES ========== */
 
-    IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
+    IERC20 public constant stakingToken;
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public rewardsDuration = 7 days;
@@ -31,8 +32,9 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _rewardsDistribution) public {
+    constructor(address _rewardsDistribution, address _stakingToken) public {
         rewardsDistribution = _rewardsDistribution;
+        stakingToken = _stakingToken;
     }
 
     /* ========== VIEWS ========== */
@@ -53,35 +55,36 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
         if (_totalSupply == 0) {
             return rewardPerTokenStored;
         }
-        return
-            rewardPerTokenStored.add(
-                lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
-            );
+        return rewardPerTokenStored + (lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * 1e18 / _totalSupply;
     }
 
     function earned(address account) public view returns (uint256) {
-        return _balances[account].mul(rewardPerToken().sub(userRewardPerTokenPaid[account])).div(1e18).add(rewards[account]);
+        return _balances[account] * (rewardPerToken() - userRewardPerTokenPaid[account]) / 1e18 + rewards[account];
     }
 
     function getRewardForDuration() external view returns (uint256) {
-        return rewardRate.mul(rewardsDuration);
+        return rewardRate * rewardsDuration;
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
+    function _updateVotes(address account) internal override;
+
     function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
-        _totalSupply = _totalSupply.add(amount);
-        _balances[msg.sender] = _balances[msg.sender].add(amount);
+        _totalSupply += amount;
+        _balances[msg.sender] += amount;
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
+        _updateVotes(msg.sender);
         emit Staked(msg.sender, amount);
     }
 
     function withdraw(uint256 amount) public nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot withdraw 0");
-        _totalSupply = _totalSupply.sub(amount);
-        _balances[msg.sender] = _balances[msg.sender].sub(amount);
+        _totalSupply -= amount;
+        _balances[msg.sender] -= amount;
         stakingToken.safeTransfer(msg.sender, amount);
+        _updateVotes(msg.sender);
         emit Withdrawn(msg.sender, amount);
     }
 
@@ -89,8 +92,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
         uint256 reward = rewards[msg.sender];
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            (bool success, ) = msg.sender.call.value(reward)("");
-            require(success, "Transfer failed");
+            payable(account).sendValue(reward);
             emit RewardPaid(msg.sender, reward);
         }
     }
@@ -116,7 +118,7 @@ contract KTONStakingRewards is IStakingRewards, RewardsDistributionRecipient, Re
         // This keeps the reward rate in the right range, preventing overflows due to
         // very high values of rewardRate in the earned and rewardsPerToken functions;
         // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-        uint balance = address(this).balance;
+        uint256 balance = address(this).balance;
         require(rewardRate <= balance.div(rewardsDuration), "Provided reward too high");
 
         lastUpdateTime = block.timestamp;
