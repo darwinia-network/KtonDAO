@@ -1,21 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import "../staking/StakingRewards.sol";
 
-contract GovernanceKton is Initializable, ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable {
+contract GovernanceKton is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, StakingRewards {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function __GKTON_init() internal onlyInitializing {
+    function initialize(address _rewardsDistribution) public initializer {
+        __StakingRewards_init(_rewardsDistribution);
         __ERC20_init("Governance KTON", "gKTON");
         __ERC20Permit_init("Governance KTON");
         __ERC20Votes_init();
+    }
+
+    function _issue(address account, uint256 value) internal override {
+        _mint(account, value);
+    }
+
+    function _destroy(address account, uint256 value) internal override {
+        _burn(account, value);
     }
 
     function transfer(address, uint256) public override returns (bool) {

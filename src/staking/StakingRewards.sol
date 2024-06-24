@@ -5,12 +5,12 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 // Inheritance
 import "./interfaces/IStakingRewards.sol";
-import "../governance/GovernanceKton.sol";
 
-contract StakingRewards is IStakingRewards, GovernanceKton, ReentrancyGuardUpgradeable {
+abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
@@ -38,10 +38,9 @@ contract StakingRewards is IStakingRewards, GovernanceKton, ReentrancyGuardUpgra
 
     /* ========== CONSTRUCTOR ========== */
 
-    function initialize(address _rewardsDistribution) public initializer {
+    function __StakingRewards_init(address _rewardsDistribution) internal onlyInitializing {
         rewardsDistribution = _rewardsDistribution;
         rewardsDuration = 7 days;
-        __GKTON_init();
     }
 
     /* ========== VIEWS ========== */
@@ -79,12 +78,15 @@ contract StakingRewards is IStakingRewards, GovernanceKton, ReentrancyGuardUpgra
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
+    function _issue(address account, uint256 value) internal virtual;
+    function _destroy(address account, uint256 value) internal virtual;
+
     function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
         _totalSupply += amount;
         _balances[msg.sender] += amount;
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
-        _mint(msg.sender, amount);
+        _issue(msg.sender, amount);
         emit Staked(msg.sender, amount);
     }
 
@@ -93,7 +95,7 @@ contract StakingRewards is IStakingRewards, GovernanceKton, ReentrancyGuardUpgra
         _totalSupply -= amount;
         _balances[msg.sender] -= amount;
         stakingToken.safeTransfer(msg.sender, amount);
-        _burn(msg.sender, amount);
+        _destroy(msg.sender, amount);
         emit Withdrawn(msg.sender, amount);
     }
 
