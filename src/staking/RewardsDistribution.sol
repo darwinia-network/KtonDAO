@@ -36,7 +36,8 @@ contract RewardsDistribution is Initializable, Ownable2StepUpgradeable {
     /// Runtime migration Step:
     /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
     /// 2. distributeRewards to this contract address.
-    function distributeRewards(uint256 reward) external payable onlyNotifier returns (bool) {
+    function distributeRewards() external payable onlyNotifier returns (bool) {
+        uint256 reward = msg.value;
         require(reward > 0, "Nothing to distribute");
         require(
             address(this).balance >= reward, "RewardsDistribution contract does not have enough tokens to distribute"
