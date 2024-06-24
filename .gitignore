@@ -1,4 +1,6 @@
 /out
+/broadcast
+cache/
 .DS_Store
 .dapprc
 .sethrc
