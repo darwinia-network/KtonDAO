@@ -1,24 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 // Inheritance
 import "./interfaces/IStakingRewards.sol";
 
-abstract contract StakingRewards is IStakingRewards, ReentrancyGuard {
+abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
     /* ========== STATE VARIABLES ========== */
 
-    IERC20 public stakingToken;
-    uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
-    uint256 public rewardsDuration = 7 days;
+
+    IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
+    uint256 public periodFinish;
+    uint256 public rewardRate;
+    uint256 public rewardsDuration;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -37,18 +39,22 @@ abstract contract StakingRewards is IStakingRewards, ReentrancyGuard {
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _rewardsDistribution, address _stakingToken) {
+    function __StakingRewards_init(address _rewardsDistribution) internal onlyInitializing {
         rewardsDistribution = _rewardsDistribution;
-        stakingToken = IERC20(_stakingToken);
+		rewardsDuration = 7 days;
     }
 
     /* ========== VIEWS ========== */
 
-    function totalSupply() public view returns (uint256) {
+	function underlying() public view returns (address) {
+		return address(stakingToken);
+	}
+
+    function underlyingTotalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view returns (uint256) {
+    function underlyingBalanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
 
