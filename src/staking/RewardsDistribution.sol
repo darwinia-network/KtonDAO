@@ -36,6 +36,7 @@ contract RewardsDistribution is Initializable, Ownable2StepUpgradeable {
     /// Runtime migration Step:
     /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
     /// 2. distributeRewards to this contract address.
+    /// Note: The amount of the reward must be passed in via msg.value.
     function distributeRewards() external payable onlyNotifier returns (bool) {
         uint256 reward = msg.value;
         require(reward > 0, "Nothing to distribute");
@@ -50,11 +51,16 @@ contract RewardsDistribution is Initializable, Ownable2StepUpgradeable {
         uint256 oldReward = reward * oldTotalSupply / totalSupply;
         uint256 newReward = reward - oldReward;
 
-        IRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).notifyRewardAmount{value: oldReward}();
-        emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, oldReward);
+        if (oldReward > 0) {
+            IRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).notifyRewardAmount{value: oldReward}();
+            emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, oldReward);
+        }
 
-        IRewardsDistributionRecipient(stakingRewards).notifyRewardAmount{value: newReward}();
-        emit RewardsDistributed(stakingRewards, newReward);
+        if (newReward > 0) {
+            IRewardsDistributionRecipient(stakingRewards).notifyRewardAmount{value: newReward}();
+            emit RewardsDistributed(stakingRewards, newReward);
+        }
+
         return true;
     }
 
