@@ -21,9 +21,17 @@ contract KtonDAO is
         _disableInitializers();
     }
 
-    function initialize(IVotes _token, TimelockControllerUpgradeable _timelock) public initializer {
-        __Governor_init("KtonDAO");
-        __GovernorSettings_init(1 days, 2 weeks, 200e18);
+    function initialize(
+        IVotes _token,
+        TimelockControllerUpgradeable _timelock,
+        uint48 initialVotingDelay,
+        uint32 initialVotingPeriod,
+        uint256 initialProposalThreshold,
+        string memory name
+    ) public initializer {
+        __Governor_init(name);
+        // __GovernorSettings_init(1 days, 2 weeks, 200e18);
+        __GovernorSettings_init(initialVotingDelay, initialVotingPeriod, initialProposalThreshold);
         __GovernorCountingSimple_init();
         __GovernorVotes_init(_token);
         __GovernorTimelockControl_init(_timelock);
