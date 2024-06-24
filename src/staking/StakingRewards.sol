@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -9,13 +8,13 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 
 // Inheritance
 import "./interfaces/IStakingRewards.sol";
+import "../governance/GovernanceKton.sol";
 
-abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGuardUpgradeable {
+contract StakingRewards is IStakingRewards, GovernanceKton, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
     /* ========== STATE VARIABLES ========== */
-
 
     IERC20 public constant stakingToken = IERC20(0x0000000000000000000000000000000000000402);
     uint256 public periodFinish;
@@ -39,16 +38,17 @@ abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGu
 
     /* ========== CONSTRUCTOR ========== */
 
-    function __StakingRewards_init(address _rewardsDistribution) internal onlyInitializing {
+    function initialize(address _rewardsDistribution) public initializer {
         rewardsDistribution = _rewardsDistribution;
-		rewardsDuration = 7 days;
+        rewardsDuration = 7 days;
+        __GKTON_init();
     }
 
     /* ========== VIEWS ========== */
 
-	function underlying() public view returns (address) {
-		return address(stakingToken);
-	}
+    function underlying() public pure returns (address) {
+        return address(stakingToken);
+    }
 
     function underlyingTotalSupply() public view returns (uint256) {
         return _totalSupply;
@@ -79,14 +79,12 @@ abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGu
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
-    function _updateVotes(address account) internal virtual;
-
     function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
         _totalSupply += amount;
         _balances[msg.sender] += amount;
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
-        _updateVotes(msg.sender);
+        _mint(msg.sender, amount);
         emit Staked(msg.sender, amount);
     }
 
@@ -95,7 +93,7 @@ abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGu
         _totalSupply -= amount;
         _balances[msg.sender] -= amount;
         stakingToken.safeTransfer(msg.sender, amount);
-        _updateVotes(msg.sender);
+        _burn(msg.sender, amount);
         emit Withdrawn(msg.sender, amount);
     }
 

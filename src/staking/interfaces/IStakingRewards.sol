@@ -11,9 +11,11 @@ interface IStakingRewards {
 
     function getRewardForDuration() external view returns (uint256);
 
-    function totalSupply() external view returns (uint256);
+    function underlying() external pure returns (address);
 
-    function balanceOf(address account) external view returns (uint256);
+    function underlyingTotalSupply() external view returns (uint256);
+
+    function underlyingBalanceOf(address account) external view returns (uint256);
 
     // Mutative
 
