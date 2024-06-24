@@ -80,13 +80,15 @@ abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGu
 
     function _issue(address account, uint256 value) internal virtual;
     function _destroy(address account, uint256 value) internal virtual;
+    function _delegateTo(address account, address delegatee) internal virtual;
 
-    function stake(uint256 amount) external nonReentrant updateReward(msg.sender) {
+    function stake(uint256 amount, address delegatee) external nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
         _totalSupply += amount;
         _balances[msg.sender] += amount;
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
         _issue(msg.sender, amount);
+        _delegateTo(msg.sender, delegatee);
         emit Staked(msg.sender, amount);
     }
 
