@@ -30,14 +30,13 @@ contract KtonDAO is
         string memory name
     ) public initializer {
         __Governor_init(name);
-        // __GovernorSettings_init(1 days, 2 weeks, 200e18);
         __GovernorSettings_init(initialVotingDelay, initialVotingPeriod, initialProposalThreshold);
         __GovernorCountingSimple_init();
         __GovernorVotes_init(_token);
         __GovernorTimelockControl_init(_timelock);
     }
 
-    function quorum(uint256 blockNumber) public pure override returns (uint256) {
+    function quorum(uint256) public pure override returns (uint256) {
         return 5_000e18;
     }
 

@@ -1,26 +1,22 @@
 [profile.default]
 src = "src"
 out = "out"
-script = "script"
-cache = true
-cache_path = "cache"
-build_info = true
 libs = ["lib"]
-sender = "0x0f14341A7f464320319025540E8Fe48Ad0fe5aec"
-force = false
+sender = "0x39b974E540B5EBE88579AC2D2668233C39C964D2"
+force = true
+ffi = true
+ast = true
+build-info = true
 optimizer = true
-verbosity = 5
 auto_detect_remappings = false
 optimizer_runs = 999999
 evm_version = "london"
 bytecode_hash = "ipfs"
-extra_output = ['storageLayout']
+extra_output = ["storageLayout"]
 extra_output_files = ["metadata"]
+fs_permissions = [{ access = "read", path = "out" }]
 
 [rpc_endpoints]
-## testnets
-darwinia_koi = "https://koi-rpc.darwinia.network"
+pangolin = "https://pangolin-rpc.darwinia.network"
+crab = "https://crab-rpc.darwinia.network"
 
-## mainnets
-darwinia = "https://darwinia-rpc.itering.io"
-crab = "https://crab-rpc.itering.io"

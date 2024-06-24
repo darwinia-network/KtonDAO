@@ -9,15 +9,15 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
     // "modlda/trsry" in bytes.
-    address public constant NOTIFIER = 0x6D6f646c64612f74727372790000000000000000;
+    address public constant SYSTEM_PALLET = 0x6D6f646c64612f74727372790000000000000000;
 
     address public constant OLD_KTON_STAKING_REWARDS = 0x000000000419683a1a03AbC21FC9da25fd2B4dD7;
     address public constant OLD_KTON_REWARDS_DISTRIBUTION = 0x000000000Ae5DB7BDAf8D071e680452e33d91Dd5;
 
     address public stakingRewards;
 
-    modifier onlyNotifier() {
-        require(msg.sender == NOTIFIER, "Caller is not RewardsDistribution contract");
+    modifier onlySystem() {
+        require(msg.sender == SYSTEM_PALLET, "Caller is not RewardsDistribution contract");
         _;
     }
 
@@ -37,7 +37,7 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
     /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
     /// 2. distributeRewards to this contract address.
     /// Note: The amount of the reward must be passed in via msg.value.
-    function distributeRewards() external payable onlyNotifier returns (bool) {
+    function distributeRewards() external payable onlySystem returns (bool) {
         uint256 reward = msg.value;
         require(reward > 0, "Nothing to distribute");
         require(
