@@ -7,7 +7,7 @@ import "./interfaces/IOldStakingRewards.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-contract RewardsDistribution is Initializable, Ownable2StepUpgradeable {
+contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
     // "modlda/trsry" in bytes.
     address public constant NOTIFIER = 0x6D6f646c64612f74727372790000000000000000;
 

@@ -19,7 +19,7 @@ interface IStakingRewards {
 
     // Mutative
 
-    function stake(uint256 amount) external;
+    function stake(uint256 amount, address delegatee) external;
 
     function withdraw(uint256 amount) external;
 
