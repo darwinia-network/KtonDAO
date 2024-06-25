@@ -21,7 +21,7 @@ contract GovernanceKton is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesU
 
     function lockAndStake(uint256 amount) external override {
         _stake(amount);
-        _mint(msg.sender, value);
+        _mint(msg.sender, amount);
     }
 
     function unlockAndWithdraw(uint256 amount) external override {
