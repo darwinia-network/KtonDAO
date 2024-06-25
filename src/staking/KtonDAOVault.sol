@@ -48,6 +48,10 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
         uint256 newTotalSupply = IStakingRewards(stakingRewards).underlyingTotalSupply();
         uint256 totalSupply = oldTotalSupply + newTotalSupply;
 
+        if (totalSupply == 0) {
+            return true;
+        }
+
         uint256 oldReward = reward * oldTotalSupply / totalSupply;
         uint256 newReward = reward - oldReward;
 

@@ -19,16 +19,14 @@ contract GovernanceKton is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesU
         __ERC20Votes_init();
     }
 
-    function _issue(address account, uint256 value) internal override {
-        _mint(account, value);
+    function lockAndStake(uint256 amount) external override {
+        _stake(amount);
+        _mint(msg.sender, value);
     }
 
-    function _destroy(address account, uint256 value) internal override {
-        _burn(account, value);
-    }
-
-    function _delegateTo(address account, address delegatee) internal override {
-        _delegate(account, delegatee);
+    function unlockAndWithdraw(uint256 amount) external override {
+        _withdraw(amount);
+        _burn(msg.sender, amount);
     }
 
     function transfer(address, uint256) public override returns (bool) {

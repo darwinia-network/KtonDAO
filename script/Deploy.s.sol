@@ -33,7 +33,7 @@ contract DeployScript is Script {
             timelock,
             abi.encodeCall(
                 KtonDAO.initialize,
-                (IVotes(gKTON), TimelockControllerUpgradeable(payable(timelock)), 1 days, 30 days, 200e18, "KtonDAO")
+                (IVotes(gKTON), TimelockControllerUpgradeable(payable(timelock)), 1 days, 30 days, 20e18, "KtonDAO")
             )
         );
         safeconsole.log("KtonDAO: ", ktonDAO_PROXY);

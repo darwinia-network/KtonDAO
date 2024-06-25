@@ -37,7 +37,7 @@ contract KtonDAO is
     }
 
     function quorum(uint256) public pure override returns (uint256) {
-        return 5_000e18;
+        return 3_000e18;
     }
 
     // The following functions are overrides required by Solidity.
