@@ -11,9 +11,9 @@ interface IOldStakingRewards {
 
     function getRewardForDuration() external view returns (uint256);
 
-    function TotalSupply() external view returns (uint256);
+    function totalSupply() external view returns (uint256);
 
-    function BalanceOf(address account) external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
 
     // Mutative
 

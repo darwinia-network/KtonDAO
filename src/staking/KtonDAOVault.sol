@@ -44,7 +44,7 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
             address(this).balance >= reward, "RewardsDistribution contract does not have enough tokens to distribute"
         );
 
-        uint256 oldTotalSupply = IOldStakingRewards(OLD_KTON_STAKING_REWARDS).TotalSupply();
+        uint256 oldTotalSupply = IOldStakingRewards(OLD_KTON_STAKING_REWARDS).totalSupply();
         uint256 newTotalSupply = IStakingRewards(stakingRewards).underlyingTotalSupply();
         uint256 totalSupply = oldTotalSupply + newTotalSupply;
 
