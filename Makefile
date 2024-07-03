@@ -1,9 +1,9 @@
-all    :; source .env.local && dapp --use solc:0.5.16 build
-flat   :; source .env.local && dapp --use solc:0.5.16 flat
-clean  :; dapp clean
-test   :; dapp test
+all    :; @forge build
+clean  :; @forge clean
+test   :; @forge test
+fmt    :; @forge fmt
 
-salt   :; @create3 -s 00000000000000
-deploy :; @bash ./bin/deploy.sh $(chain)
+dry-run:; @forge script script/Deploy.s.sol:DeployScript --rpc-url "https://koi-rpc.darwinia.network"
+deploy :; @forge script script/Deploy.s.sol:DeployScript --rpc-url "https://koi-rpc.darwinia.network"  --broadcast
 
 .PHONY: all flat clean test salt deploy

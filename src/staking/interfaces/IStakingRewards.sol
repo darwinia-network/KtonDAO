@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.24;
 
 interface IStakingRewards {
@@ -10,15 +11,17 @@ interface IStakingRewards {
 
     function getRewardForDuration() external view returns (uint256);
 
-    function totalSupply() external view returns (uint256);
+    function underlying() external pure returns (address);
 
-    function balanceOf(address account) external view returns (uint256);
+    function underlyingTotalSupply() external view returns (uint256);
+
+    function underlyingBalanceOf(address account) external view returns (uint256);
 
     // Mutative
 
-    function stake(uint256 amount) external;
+    function lockAndStake(uint256 amount) external;
 
-    function withdraw(uint256 amount) external;
+    function unlockAndWithdraw(uint256 amount) external;
 
     function getReward() external;
 
