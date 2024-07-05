@@ -3,7 +3,7 @@ clean  :; @forge clean
 test   :; @forge test
 fmt    :; @forge fmt
 
-dry-run:; @forge script script/Deploy.s.sol:DeployScript --rpc-url "https://koi-rpc.darwinia.network"
-deploy :; @forge script script/Deploy.s.sol:DeployScript --rpc-url "https://koi-rpc.darwinia.network"  --broadcast
+dry-run:; @forge script script/DeployKoi.s.sol:DeployKoiScript --rpc-url "https://crab-rpc.darwinia.network"
+deploy :; @forge script script/DeployKoi.s.sol:DeployKoiScript --rpc-url "https://koi-rpc.darwinia.network"  --broadcast
 
 .PHONY: all flat clean test salt deploy

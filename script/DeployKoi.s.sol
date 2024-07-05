@@ -11,7 +11,7 @@ import {KtonDAO, IVotes, TimelockControllerUpgradeable} from "../src/governance/
 import {KtonTimelockController} from "../src/governance/KtonTimelockController.sol";
 import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
 
-contract DeployScript is Script {
+contract DeployKoiScript is Script {
     address gKTON = 0x01840055063E8d56C957b79C964D7fc50a825752;
     address ktonDAO = 0x34D4519c574047c9D7F9E79b2bc718aef159129B;
     address timelock = 0xCA435c493Ee55AB27e8C8b1b1a89706c5a2761b5;
@@ -29,21 +29,21 @@ contract DeployScript is Script {
         safeconsole.log("gKTON_Logic: ", Upgrades.getImplementationAddress(gKTON_PROXY));
 
         Options memory opts;
-        uint256 quorum = 3_000e18;
+        uint256 quorum = 3e16;
         opts.constructorData = abi.encode(quorum);
         address ktonDAO_PROXY = Upgrades.deployTransparentProxy(
             "KtonDAO.sol:KtonDAO",
             timelock,
             abi.encodeCall(
                 KtonDAO.initialize,
-                (IVotes(gKTON), TimelockControllerUpgradeable(payable(timelock)), 1 days, 30 days, 20e18, "KtonDAO")
+                (IVotes(gKTON), TimelockControllerUpgradeable(payable(timelock)), 0, 1 hours, 1e16, "KtonDAO")
             ),
             opts
         );
         safeconsole.log("KtonDAO: ", ktonDAO_PROXY);
         safeconsole.log("KtonDAO_Logic: ", Upgrades.getImplementationAddress(ktonDAO_PROXY));
 
-        uint256 minDelay = 3 days;
+        uint256 minDelay = 0;
         address[] memory proposers = new address[](1);
         proposers[0] = ktonDAO;
         KtonTimelockController timelockController =
