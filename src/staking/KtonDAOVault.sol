@@ -33,6 +33,10 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
 
     receive() external payable {}
 
+    function acceptOwnershipFromOldDistribution() external onlySystem {
+        IOldStakingRewards(OLD_KTON_REWARDS_DISTRIBUTION).acceptOwnership();
+    }
+
     /// Runtime migration Step:
     /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
     /// 2. distributeRewards to this contract address.

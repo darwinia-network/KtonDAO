@@ -16,9 +16,12 @@ contract KtonDAO is
     GovernorVotesUpgradeable,
     GovernorTimelockControlUpgradeable
 {
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
+    uint256 public immutable QUORUM;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+    constructor(uint256 quorum_) {
+        QUORUM = quorum_;
     }
 
     function initialize(
@@ -36,8 +39,8 @@ contract KtonDAO is
         __GovernorTimelockControl_init(_timelock);
     }
 
-    function quorum(uint256) public pure override returns (uint256) {
-        return 3_000e18;
+    function quorum(uint256) public view override returns (uint256) {
+        return QUORUM;
     }
 
     // The following functions are overrides required by Solidity.

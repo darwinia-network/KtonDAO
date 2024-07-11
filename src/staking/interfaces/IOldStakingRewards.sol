@@ -24,4 +24,6 @@ interface IOldStakingRewards {
     function getReward() external;
 
     function exit() external;
+
+    function acceptOwnership() external;
 }
