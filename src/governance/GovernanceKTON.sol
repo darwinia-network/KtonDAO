@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUp
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import "../staking/StakingRewards.sol";
 
-contract GovernanceKton is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, StakingRewards {
+contract GovernanceKTON is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, StakingRewards {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
