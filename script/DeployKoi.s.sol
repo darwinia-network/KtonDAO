@@ -6,7 +6,7 @@ import {safeconsole} from "forge-std/safeconsole.sol";
 import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 import {Options} from "openzeppelin-foundry-upgrades/Options.sol";
 
-import {GovernanceKton} from "../src/governance/GovernanceKton.sol";
+import {GovernanceKTON} from "../src/governance/GovernanceKTON.sol";
 import {KtonDAO, IVotes, TimelockControllerUpgradeable} from "../src/governance/KtonDAO.sol";
 import {KtonTimelockController} from "../src/governance/KtonTimelockController.sol";
 import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
@@ -23,7 +23,7 @@ contract DeployKoiScript is Script {
         vm.startBroadcast();
 
         address gKTON_PROXY = Upgrades.deployTransparentProxy(
-            "GovernanceKton.sol:GovernanceKton", timelock, abi.encodeCall(GovernanceKton.initialize, (vault))
+            "GovernanceKTON.sol:GovernanceKTON", timelock, abi.encodeCall(GovernanceKTON.initialize, (vault))
         );
         safeconsole.log("gKTON: ", gKTON_PROXY);
         safeconsole.log("gKTON_Logic: ", Upgrades.getImplementationAddress(gKTON_PROXY));
