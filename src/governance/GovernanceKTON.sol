@@ -25,6 +25,7 @@ contract GovernanceKTON is
         __ERC20_init("Governance KTON", "gKTON");
         __ERC20Permit_init("Governance KTON");
         __ERC20Votes_init();
+		__ERC165_init();
     }
 
     function supportsInterface(bytes4 _interfaceId) public view virtual override returns (bool) {
