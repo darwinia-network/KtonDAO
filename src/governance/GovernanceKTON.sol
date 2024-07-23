@@ -4,9 +4,17 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import "../staking/StakingRewards.sol";
 
-contract GovernanceKTON is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, StakingRewards {
+contract GovernanceKTON is
+    ERC165Upgradeable,
+    ERC20Upgradeable,
+    ERC20PermitUpgradeable,
+    ERC20VotesUpgradeable,
+    StakingRewards
+{
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -17,6 +25,13 @@ contract GovernanceKTON is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20VotesU
         __ERC20_init("Governance KTON", "gKTON");
         __ERC20Permit_init("Governance KTON");
         __ERC20Votes_init();
+		__ERC165_init();
+    }
+
+    function supportsInterface(bytes4 _interfaceId) public view virtual override returns (bool) {
+        return _interfaceId == type(IERC20).interfaceId || _interfaceId == type(IERC20Permit).interfaceId
+            || _interfaceId == type(IERC20Metadata).interfaceId || _interfaceId == type(IVotes).interfaceId
+            || super.supportsInterface(_interfaceId);
     }
 
     function lockAndStake(uint256 amount) external override {
