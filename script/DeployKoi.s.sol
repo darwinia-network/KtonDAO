@@ -12,10 +12,10 @@ import {KtonTimelockController} from "../src/governance/KtonTimelockController.s
 import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
 
 contract DeployKoiScript is Script {
-    address gKTON = 0x01840055063E8d56C957b79C964D7fc50a825752;
-    address ktonDAO = 0x34D4519c574047c9D7F9E79b2bc718aef159129B;
-    address timelock = 0xCA435c493Ee55AB27e8C8b1b1a89706c5a2761b5;
-    address vault = 0x0DBFbb1Ab6e42F89661B4f98d5d0acdBE21d1ffC;
+    address gKTON = 0x6FB1cE2dc2043FEc15d4d8A58cAF06a47A8f025F;
+    address ktonDAO = 0xfe024E36B116bBFCb337BfD71a8C9e32330dA128;
+    address timelock = 0x80dEE0851313a46b2a8604209B1f3225E1721c9a;
+    address vault = 0xf1b4f3D438eE2B363C5ba1641A498709ff5780bA;
 
     function setUp() public {}
 
@@ -44,10 +44,10 @@ contract DeployKoiScript is Script {
         safeconsole.log("KtonDAO_Logic: ", Upgrades.getImplementationAddress(ktonDAO_PROXY));
 
         uint256 minDelay = 0;
-        address[] memory proposers = new address[](1);
-        proposers[0] = ktonDAO;
+        address[] memory roles = new address[](1);
+        roles[0] = ktonDAO;
         KtonTimelockController timelockController =
-            new KtonTimelockController(minDelay, proposers, new address[](0), address(0));
+            new KtonTimelockController(minDelay, roles, roles, address(0));
         safeconsole.log("Timelock: ", address(timelockController));
 
         address KtonDAOVault_PROXY = Upgrades.deployTransparentProxy(
