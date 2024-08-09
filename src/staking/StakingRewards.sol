@@ -103,11 +103,6 @@ abstract contract StakingRewards is IStakingRewards, Initializable, ReentrancyGu
         }
     }
 
-    function exit() external {
-        _withdraw(_balances[msg.sender]);
-        getReward();
-    }
-
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     function notifyRewardAmount() external payable onlyRewardsDistribution updateReward(address(0)) {

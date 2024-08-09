@@ -12,15 +12,48 @@ import {KtonTimelockController} from "../src/governance/KtonTimelockController.s
 import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
 
 contract DeployScript is Script {
-    address gKTON = 0x6FB1cE2dc2043FEc15d4d8A58cAF06a47A8f025F;
-    address ktonDAO = 0xfe024E36B116bBFCb337BfD71a8C9e32330dA128;
-    address timelock = 0x80dEE0851313a46b2a8604209B1f3225E1721c9a;
-    address vault = 0xf1b4f3D438eE2B363C5ba1641A498709ff5780bA;
+    address gKTON = 0xa42980efF5439F97A768F0B7a00c70ff0a213977;
+    address ktonDAO = 0xF3522CA27807ED1264e399FaC42e8621Db4b5Dc4;
+    address timelock = 0xb80b7Bd1001d6B5D4a9bf0d3524b85b244147C30;
+    address vault = 0x9e5cED4C978F92591fD0609c5c781e6aDdB75ac0;
 
-    function setUp() public {}
+    struct Settings {
+        uint256 quorum;
+        uint256 initialProposalThreshold;
+        uint32 initialVotingPeriod;
+        uint256 timelockDeplay;
+    }
+
+    function getSettings(uint256 chainId) public pure returns (Settings memory) {
+        if (chainId == 701) {
+            return Settings({
+                quorum: 3e16,
+                initialProposalThreshold: 1e16,
+                initialVotingPeriod: 1 hours,
+                timelockDeplay: 0
+            });
+        } else if (chainId == 44) {
+            return Settings({
+                quorum: 4_500e18,
+                initialProposalThreshold: 35e18,
+                initialVotingPeriod: 30 days,
+                timelockDeplay: 3 days
+            });
+        } else if (chainId == 46) {
+            return Settings({
+                quorum: 3_000e18,
+                initialProposalThreshold: 20e18,
+                initialVotingPeriod: 30 days,
+                timelockDeplay: 3 days
+            });
+        }
+    }
 
     function run() public {
         vm.startBroadcast();
+
+        safeconsole.log("Chain Id: ", block.chainid);
+        Settings memory s = getSettings(block.chainid);
 
         address gKTON_PROXY = Upgrades.deployTransparentProxy(
             "GovernanceKTON.sol:GovernanceKTON", timelock, abi.encodeCall(GovernanceKTON.initialize, (vault))
@@ -29,21 +62,28 @@ contract DeployScript is Script {
         safeconsole.log("gKTON_Logic: ", Upgrades.getImplementationAddress(gKTON_PROXY));
 
         Options memory opts;
-        uint256 quorum = 3_000e18;
+        uint256 quorum = s.quorum;
         opts.constructorData = abi.encode(quorum);
         address ktonDAO_PROXY = Upgrades.deployTransparentProxy(
             "KtonDAO.sol:KtonDAO",
             timelock,
             abi.encodeCall(
                 KtonDAO.initialize,
-                (IVotes(gKTON), TimelockControllerUpgradeable(payable(timelock)), 1 days, 30 days, 20e18, "KtonDAO")
+                (
+                    IVotes(gKTON),
+                    TimelockControllerUpgradeable(payable(timelock)),
+                    0,
+                    s.initialVotingPeriod,
+                    s.initialProposalThreshold,
+                    "KtonDAO"
+                )
             ),
             opts
         );
         safeconsole.log("KtonDAO: ", ktonDAO_PROXY);
         safeconsole.log("KtonDAO_Logic: ", Upgrades.getImplementationAddress(ktonDAO_PROXY));
 
-        uint256 minDelay = 3 days;
+        uint256 minDelay = s.timelockDeplay;
         address[] memory proposers = new address[](1);
         proposers[0] = ktonDAO;
         KtonTimelockController timelockController =
