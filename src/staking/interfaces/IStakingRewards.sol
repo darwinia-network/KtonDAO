@@ -24,6 +24,4 @@ interface IStakingRewards {
     function unlockAndWithdraw(uint256 amount) external;
 
     function getReward() external;
-
-    function exit() external;
 }
