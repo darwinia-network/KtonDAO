@@ -20,10 +20,10 @@ contract GovernanceKTON is
         _disableInitializers();
     }
 
-    function initialize(address _rewardsDistribution) public initializer {
+    function initialize(address _rewardsDistribution, string memory name, string memory symbol) public initializer {
         __StakingRewards_init(_rewardsDistribution);
-        __ERC20_init("Governance KTON", "gKTON");
-        __ERC20Permit_init("Governance KTON");
+        __ERC20_init(name, symbol);
+        __ERC20Permit_init(name);
         __ERC20Votes_init();
         __ERC165_init();
     }

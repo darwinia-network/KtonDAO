@@ -12,12 +12,15 @@ import {KtonTimelockController} from "../src/governance/KtonTimelockController.s
 import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
 
 contract DeployScript is Script {
-    address gKTON = 0xa42980efF5439F97A768F0B7a00c70ff0a213977;
-    address ktonDAO = 0xF3522CA27807ED1264e399FaC42e8621Db4b5Dc4;
-    address timelock = 0xb80b7Bd1001d6B5D4a9bf0d3524b85b244147C30;
-    address vault = 0x9e5cED4C978F92591fD0609c5c781e6aDdB75ac0;
+    address gKTON = 0xB633Ad1142941CA2Eb9C350579cF88BbE266660D;
+    address ktonDAO = 0xaAC63c40930cCAF99603229F6381D82966b145ef;
+    address timelock = 0x08837De0Ae21C270383D9F2de4DB03c7b1314632;
+    address vault = 0x652182C6aBc0bBE41b5702b05a26d109A405EAcA;
 
     struct Settings {
+		string gKtonName;
+		string gKtonSymbol;
+		string daoName;
         uint256 quorum;
         uint256 initialProposalThreshold;
         uint32 initialVotingPeriod;
@@ -27,6 +30,9 @@ contract DeployScript is Script {
     function getSettings(uint256 chainId) public pure returns (Settings memory) {
         if (chainId == 701) {
             return Settings({
+				gKtonName: "Governance PKTON",
+				gKtonSymbol: "gPKTON",
+				daoName: "PKtonDAO",
                 quorum: 3e16,
                 initialProposalThreshold: 1e16,
                 initialVotingPeriod: 1 hours,
@@ -34,6 +40,9 @@ contract DeployScript is Script {
             });
         } else if (chainId == 44) {
             return Settings({
+				gKtonName: "Governance CKTON",
+				gKtonSymbol: "gCKTON",
+				daoName: "CKtonDAO",
                 quorum: 4_500e18,
                 initialProposalThreshold: 35e18,
                 initialVotingPeriod: 30 days,
@@ -41,6 +50,9 @@ contract DeployScript is Script {
             });
         } else if (chainId == 46) {
             return Settings({
+				gKtonName: "Governance KTON",
+				gKtonSymbol: "gKTON",
+				daoName: "KtonDAO",
                 quorum: 3_000e18,
                 initialProposalThreshold: 20e18,
                 initialVotingPeriod: 30 days,
@@ -56,7 +68,7 @@ contract DeployScript is Script {
         Settings memory s = getSettings(block.chainid);
 
         address gKTON_PROXY = Upgrades.deployTransparentProxy(
-            "GovernanceKTON.sol:GovernanceKTON", timelock, abi.encodeCall(GovernanceKTON.initialize, (vault))
+            "GovernanceKTON.sol:GovernanceKTON", timelock, abi.encodeCall(GovernanceKTON.initialize, (vault, s.gKtonName, s.gKtonSymbol))
         );
         safeconsole.log("gKTON: ", gKTON_PROXY);
         safeconsole.log("gKTON_Logic: ", Upgrades.getImplementationAddress(gKTON_PROXY));
@@ -75,7 +87,7 @@ contract DeployScript is Script {
                     0,
                     s.initialVotingPeriod,
                     s.initialProposalThreshold,
-                    "KtonDAO"
+                    s.daoName 
                 )
             ),
             opts
