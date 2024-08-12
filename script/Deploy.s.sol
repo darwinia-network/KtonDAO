@@ -18,9 +18,9 @@ contract DeployScript is Script {
     address vault = 0x652182C6aBc0bBE41b5702b05a26d109A405EAcA;
 
     struct Settings {
-		string gKtonName;
-		string gKtonSymbol;
-		string daoName;
+        string gKtonName;
+        string gKtonSymbol;
+        string daoName;
         uint256 quorum;
         uint256 initialProposalThreshold;
         uint32 initialVotingPeriod;
@@ -30,9 +30,9 @@ contract DeployScript is Script {
     function getSettings(uint256 chainId) public pure returns (Settings memory) {
         if (chainId == 701) {
             return Settings({
-				gKtonName: "Governance PKTON",
-				gKtonSymbol: "gPKTON",
-				daoName: "PKtonDAO",
+                gKtonName: "Governance PKTON",
+                gKtonSymbol: "gPKTON",
+                daoName: "PKtonDAO",
                 quorum: 3e16,
                 initialProposalThreshold: 1e16,
                 initialVotingPeriod: 1 hours,
@@ -40,9 +40,9 @@ contract DeployScript is Script {
             });
         } else if (chainId == 44) {
             return Settings({
-				gKtonName: "Governance CKTON",
-				gKtonSymbol: "gCKTON",
-				daoName: "CKtonDAO",
+                gKtonName: "Governance CKTON",
+                gKtonSymbol: "gCKTON",
+                daoName: "CKtonDAO",
                 quorum: 4_500e18,
                 initialProposalThreshold: 35e18,
                 initialVotingPeriod: 30 days,
@@ -50,9 +50,9 @@ contract DeployScript is Script {
             });
         } else if (chainId == 46) {
             return Settings({
-				gKtonName: "Governance KTON",
-				gKtonSymbol: "gKTON",
-				daoName: "KtonDAO",
+                gKtonName: "Governance KTON",
+                gKtonSymbol: "gKTON",
+                daoName: "KtonDAO",
                 quorum: 3_000e18,
                 initialProposalThreshold: 20e18,
                 initialVotingPeriod: 30 days,
@@ -68,7 +68,9 @@ contract DeployScript is Script {
         Settings memory s = getSettings(block.chainid);
 
         address gKTON_PROXY = Upgrades.deployTransparentProxy(
-            "GovernanceKTON.sol:GovernanceKTON", timelock, abi.encodeCall(GovernanceKTON.initialize, (vault, s.gKtonName, s.gKtonSymbol))
+            "GovernanceKTON.sol:GovernanceKTON",
+            timelock,
+            abi.encodeCall(GovernanceKTON.initialize, (vault, s.gKtonName, s.gKtonSymbol))
         );
         safeconsole.log("gKTON: ", gKTON_PROXY);
         safeconsole.log("gKTON_Logic: ", Upgrades.getImplementationAddress(gKTON_PROXY));
@@ -87,7 +89,7 @@ contract DeployScript is Script {
                     0,
                     s.initialVotingPeriod,
                     s.initialProposalThreshold,
-                    s.daoName 
+                    s.daoName
                 )
             ),
             opts
