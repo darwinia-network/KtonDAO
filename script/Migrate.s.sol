@@ -6,7 +6,7 @@ import {safeconsole} from "forge-std/safeconsole.sol";
 import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 import {Core} from "openzeppelin-foundry-upgrades/internal/Core.sol";
 
-import {KtonDAOVaultV2} from "../src/staking/KtonDAOVaultV2.sol";
+import {KtonDAOVault} from "../src/staking/KtonDAOVault.sol";
 
 contract MigrateScript is Script {
     address vault = 0x652182C6aBc0bBE41b5702b05a26d109A405EAcA;
@@ -15,7 +15,7 @@ contract MigrateScript is Script {
     function run() public {
         vm.startBroadcast();
 
-        Core.upgradeProxyTo(vault, v2, abi.encodeCall(KtonDAOVaultV2.initializeV2, ()));
+        Core.upgradeProxyTo(vault, v2, abi.encodeCall(KtonDAOVault.initializeV2, ()));
 
         vm.stopBroadcast();
     }
