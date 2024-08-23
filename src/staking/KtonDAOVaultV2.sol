@@ -2,12 +2,14 @@
 pragma solidity 0.8.20;
 
 import "./interfaces/IRewardsDistributionRecipient.sol";
+import "./interfaces/IOldRewardsDistributionRecipient.sol";
 import "./interfaces/IStakingRewards.sol";
 import "./interfaces/IOldStakingRewards.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
+/// @custom:oz-upgrades-from KtonDAOVault
+contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
     // "modlda/trsry" in bytes.
     address public constant SYSTEM_PALLET = 0x6D6f646c64612f74727372790000000000000000;
 
@@ -21,9 +23,12 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
         _;
     }
 
-    function initialize(address dao, address stakingReward_) public initializer {
-        stakingRewards = stakingReward_;
-        __Ownable_init(dao);
+    function initializeV2() public reinitializer(2) {
+        uint256 rewards = OLD_KTON_REWARDS_DISTRIBUTION.balance;
+        IOldRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).distributeRewards(
+            OLD_KTON_STAKING_REWARDS, rewards
+        );
+        emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, rewards);
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -32,10 +37,6 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
     }
 
     receive() external payable {}
-
-    function acceptOwnershipFromOldDistribution() external onlySystem {
-        IOldStakingRewards(OLD_KTON_REWARDS_DISTRIBUTION).acceptOwnership();
-    }
 
     /// Runtime migration Step:
     /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
@@ -60,7 +61,9 @@ contract KtonDAOVault is Initializable, Ownable2StepUpgradeable {
         uint256 newReward = reward - oldReward;
 
         if (oldReward > 0) {
-            IRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).notifyRewardAmount{value: oldReward}();
+            IOldRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).distributeRewards{value: oldReward}(
+                OLD_KTON_STAKING_REWARDS, oldReward
+            );
             emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, oldReward);
         }
 
