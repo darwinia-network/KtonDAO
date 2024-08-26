@@ -15,6 +15,7 @@ contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
 
     address public constant OLD_KTON_STAKING_REWARDS = 0x000000000419683a1a03AbC21FC9da25fd2B4dD7;
     address public constant OLD_KTON_REWARDS_DISTRIBUTION = 0x000000000Ae5DB7BDAf8D071e680452e33d91Dd5;
+    address payable public constant KTON_DAO_TIMELOCK = payable(0x08837De0Ae21C270383D9F2de4DB03c7b1314632);
 
     address public stakingRewards;
 
@@ -23,13 +24,13 @@ contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
         _;
     }
 
-    function initializeV2() public reinitializer(2) {
-        uint256 rewards = OLD_KTON_REWARDS_DISTRIBUTION.balance;
-        IOldRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).distributeRewards(
-            OLD_KTON_STAKING_REWARDS, rewards
-        );
-        emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, rewards);
-    }
+    // function initializeV2() public reinitializer(2) {
+    //     uint256 rewards = OLD_KTON_REWARDS_DISTRIBUTION.balance;
+    //     IOldRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).distributeRewards(
+    //         OLD_KTON_STAKING_REWARDS, rewards
+    //     );
+    //     emit RewardsDistributed(OLD_KTON_REWARDS_DISTRIBUTION, rewards);
+    // }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -38,9 +39,6 @@ contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
 
     receive() external payable {}
 
-    /// Runtime migration Step:
-    /// 1. Migrate OLD_KTON_REWARDS_DISTRIBUTION's owner to this contracts address.
-    /// 2. distributeRewards to this contract address.
     /// Note: The amount of the reward must be passed in via msg.value.
     function distributeRewards() external payable onlySystem returns (bool) {
         uint256 reward = msg.value;
@@ -49,16 +47,22 @@ contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
             address(this).balance >= reward, "RewardsDistribution contract does not have enough tokens to distribute"
         );
 
+        uint256 rewardToTimelock = reward * 20 / 100;
+        uint256 rewardToStaking = reward - rewardToTimelock;
+
         uint256 oldTotalSupply = IOldStakingRewards(OLD_KTON_STAKING_REWARDS).totalSupply();
         uint256 newTotalSupply = IStakingRewards(stakingRewards).underlyingTotalSupply();
         uint256 totalSupply = oldTotalSupply + newTotalSupply;
 
         if (totalSupply == 0) {
+            _distributeToTimelock(reward);
             return true;
         }
 
-        uint256 oldReward = reward * oldTotalSupply / totalSupply;
-        uint256 newReward = reward - oldReward;
+        uint256 oldReward = rewardToStaking * oldTotalSupply / totalSupply;
+        uint256 newReward = rewardToStaking - oldReward;
+
+        _distributeToTimelock(rewardToTimelock);
 
         if (oldReward > 0) {
             IOldRewardsDistributionRecipient(OLD_KTON_REWARDS_DISTRIBUTION).distributeRewards{value: oldReward}(
@@ -73,6 +77,13 @@ contract KtonDAOVaultV2 is Initializable, Ownable2StepUpgradeable {
         }
 
         return true;
+    }
+
+    function _distributeToTimelock(uint256 reward) internal {
+        if (reward > 0) {
+            KTON_DAO_TIMELOCK.transfer(reward);
+            emit RewardsDistributed(KTON_DAO_TIMELOCK, reward);
+        }
     }
 
     event RewardsDistributed(address stakingRewards, uint256 amount);
